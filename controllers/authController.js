@@ -13,18 +13,33 @@ const signToken = (id) =>
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
-  const cookieOptions = {
+  //////////////////////////////////////////////////////////////
+  /// before heroku deployment
+  // const cookieOptions = {
+  //   expires: new Date(
+  //     Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+  //   ),
+  //   httpOnly: true,
+  // };
+  // if (process.env.NODE_ENV === 'production') {
+  //   cookieOptions.secure = true;
+  // }
+  // if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
+  //   cookieOptions.secure = true;
+  // }
+  // res.cookie('jwt', token, cookieOptions);
+  //////////////////////////////////////////////////////////////
+  //// after heroku deployment
+  res.cookie('jwt', token, {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-  };
-  if (process.env.NODE_ENV === 'production') {
-    cookieOptions.secure = true;
-  }
-  res.cookie('jwt', token, cookieOptions);
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+  });
+  ///////////////////////////////////////////////////////////////
   // remove password field from output:
   user.password = undefined;
   // status code 201 for created
@@ -47,7 +62,7 @@ const signup = catchAsync(async (req, res, next) => {
   const url = `${req.protocol}://${req.get('host')}/me`;
   // console.log(url);
   await new Email(newUser, url).sendWelcome();
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
 });
 
 const login = catchAsync(async (req, res, next) => {
@@ -66,7 +81,7 @@ const login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password!', 401));
   }
   // 3. if everything is ok, send the jwt to the client
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
   // const token = signToken(user._id);
   // //   const token = '1234hello';
   // res.status(200).json({ status: 'success', token });
@@ -253,7 +268,7 @@ const resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
   // 3.update passwordChangedAt property for the user
   // 4.log the user in, send JWT
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
   // const token = signToken(user._id);
   // res.status(200).json({ status: 'success', token });
 });
@@ -273,7 +288,7 @@ const updatePassword = catchAsync(async (req, res, next) => {
   user.passwordConfirm = req.body.passwordConfirm;
   await user.save();
   //4.log user in, send JWT
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 module.exports = {

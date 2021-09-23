@@ -58,3 +58,12 @@ process.on('unhandledRejection', (err) => {
 //  if you put this line before the process.on(uncaughtException) function,
 // then since we haven't build a listener yet, we wouldn't see the message outputed by the uncaughtException listener
 // console.log(x);
+
+///////////// for heroku SIGTERM signal
+process.on('SIGTERM', () => {
+  console.log('👋 SIGTERM RECEIVED. Shutting down gracefully');
+  // this server.close will first handle current pending requests, then shut down the server
+  server.close(() => {
+    console.log('💥 Process terminated!');
+  });
+});

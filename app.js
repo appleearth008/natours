@@ -20,6 +20,10 @@ const globalErrorHandler = require('./controllers/errorController');
 
 // start express app
 const app = express();
+
+// trust proxy for heroku secure https connection
+app.enable('trust proxy');
+
 // server-side rendering using pug
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
