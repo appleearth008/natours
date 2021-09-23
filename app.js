@@ -146,7 +146,7 @@ app.use(
 app.use(express.static(path.join(__dirname, 'public')));
 
 //
-app.user(compression());
+app.use(compression());
 
 //// testing middleware
 app.use((req, res, next) => {
