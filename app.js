@@ -2,12 +2,14 @@ const express = require('express');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-const cors = require('cors');
+// const cors = require('cors');
 const morgan = require('morgan');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
+
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const viewRouter = require('./routes/viewRoutes');
@@ -23,12 +25,12 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 ////// 1) middlewares
-app.use(
-  cors({
-    origin: 'http://127.0.0.1:3000',
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: 'http://127.0.0.1:3000',
+//     credentials: true,
+//   })
+// );
 /// global middlewares, we want to apply on all of our routes
 //////// set security HTTP headers
 /// helmet() will return a function, and this function will be called later.
@@ -142,6 +144,9 @@ app.use(
 //// serving static files
 // app.use(express.static(`${__dirname}/public`));
 app.use(express.static(path.join(__dirname, 'public')));
+
+//
+app.user(compression());
 
 //// testing middleware
 app.use((req, res, next) => {

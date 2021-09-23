@@ -171,10 +171,13 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-tourSchema.post(/^find/, function (docs, next) {
-  console.log(`The query took ${Date.now() - this.start} milliseconds!`);
-  next();
-});
+///////////////////////////////////////////////////////
+/// turned off in section 14
+// tourSchema.post(/^find/, function (docs, next) {
+//   console.log(`The query took ${Date.now() - this.start} milliseconds!`);
+//   next();
+// });
+//////////////////////////////////////////////////
 
 ///// aggregation middleware
 ///// "$geoNear is only valid as the first stage in a pipeline."
