@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-// const cors = require('cors');
+const cors = require('cors');
 const morgan = require('morgan');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
@@ -29,12 +29,18 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 ////// 1) middlewares
+
+//// CORS
 // app.use(
 //   cors({
 //     origin: 'http://127.0.0.1:3000',
 //     credentials: true,
 //   })
 // );
+
+app.use(cors());
+app.options('*', cors());
+
 /// global middlewares, we want to apply on all of our routes
 //////// set security HTTP headers
 /// helmet() will return a function, and this function will be called later.
