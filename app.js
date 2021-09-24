@@ -15,6 +15,7 @@ const userRouter = require('./routes/userRoutes');
 const viewRouter = require('./routes/viewRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
+const bookingController = require('./controllers/bookingController');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
@@ -122,6 +123,13 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP. Please try again in an hour.',
 });
 app.use('/api', limiter); // limiter is a middleware function
+
+// Stripe webhook, BEFORE body-parser, because stripe needs the body as stream
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }), // body as a string/raw form
+  bookingController.webhookCheckout
+);
 
 //// body parser, reading data from body in req.body
 //// limiting the size in req.body

@@ -13,7 +13,7 @@ html
             link(rel='stylesheet' href='/css/style.css') 
             link(rel='shortcut icon' type='img.png' href ='/img/favicon.png')
             link(rel='stylesheet', href='https://fonts.googleapis.com/css?family=Lato:300,300i,700')
-    body 
+    body(data-alert=`${alert ? alert : ''}`)
         //- {h1= tour} this is called the buffer code, we can write javascript code here as well
         //- h1= tour 
         //- h2= user.toUpperCase()
